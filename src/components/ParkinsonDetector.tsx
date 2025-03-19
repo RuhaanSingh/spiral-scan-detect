@@ -194,7 +194,7 @@ export default function ParkinsonDetector() {
                     <h3 className="text-md font-medium mb-3">Sample Images</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <SampleImage
-                        src="/images/d17.png"
+                        src="/lovable-uploads/c8192bfd-98bf-4de6-a382-b32e625a39ae.png"
                         alt="Healthy Sample"
                         label="Healthy"
                         onClick={() => handleSampleClick('healthy')}
