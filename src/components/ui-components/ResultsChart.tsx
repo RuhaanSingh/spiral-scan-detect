@@ -16,7 +16,6 @@ export function ResultsChart({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // We'll let the useCharts hook handle actual chart creation
     if (canvasRef.current) {
       console.log(`Canvas ready for chart: ${id}`);
     }
