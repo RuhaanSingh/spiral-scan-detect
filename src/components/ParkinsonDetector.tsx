@@ -201,7 +201,7 @@ export default function ParkinsonDetector() {
                         className={cn(usingSample === 'healthy' && "ring-2 ring-primary")}
                       />
                       <SampleImage 
-                        src="/images/d22.png"
+                        src="/lovable-uploads/9ec3acac-2027-4656-90d7-ce358c251987.png"
                         alt="Parkinson's Sample"
                         label="Parkinson's"
                         onClick={() => handleSampleClick('pd')}
