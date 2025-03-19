@@ -15,6 +15,13 @@ export function ResultsChart({
 }: ResultsChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  useEffect(() => {
+    // We'll let the useCharts hook handle actual chart creation
+    if (canvasRef.current) {
+      console.log(`Canvas ready for chart: ${id}`);
+    }
+  }, [id]);
+
   return (
     <div 
       className={cn(
@@ -24,7 +31,7 @@ export function ResultsChart({
     >
       <h3 className="text-md font-medium mb-3">{title}</h3>
       <div className="w-full">
-        <canvas ref={canvasRef} id={id}></canvas>
+        <canvas ref={canvasRef} id={id} width="400" height="250"></canvas>
       </div>
     </div>
   );

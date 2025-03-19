@@ -35,9 +35,7 @@ export function AnimatedGradientButton({
         className
       )}
       style={{
-        background: !disabled ? `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0) 60%)` : '',
-        backgroundPosition: 'center',
-        backgroundSize: '200% 200%',
+        backgroundImage: !disabled ? `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0) 60%)` : '',
         backgroundColor: 'hsl(var(--primary))',
       }}
       onMouseMove={handleMouseMove}

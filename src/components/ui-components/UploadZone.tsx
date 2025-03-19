@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Upload, FileText, X, Image as ImageIcon } from "lucide-react";
 import { AnimatedGradientButton } from "./AnimatedGradientButton";
@@ -9,6 +9,7 @@ interface UploadZoneProps {
   acceptedFileTypes?: string;
   maxSizeMB?: number;
   className?: string;
+  preselectedImage?: string | null;
 }
 
 export function UploadZone({
@@ -16,6 +17,7 @@ export function UploadZone({
   acceptedFileTypes = "image/*",
   maxSizeMB = 10,
   className,
+  preselectedImage = null,
 }: UploadZoneProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,6 +25,16 @@ export function UploadZone({
   const inputRef = useRef<HTMLInputElement>(null);
   
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+  // Handle preselected image
+  useEffect(() => {
+    if (preselectedImage) {
+      setPreview(preselectedImage);
+      setSelectedFile(null); // Clear any actual file, we're using a sample
+    } else if (!preselectedImage && !selectedFile) {
+      setPreview(null);
+    }
+  }, [preselectedImage]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -97,7 +109,7 @@ export function UploadZone({
 
   return (
     <div className={cn("w-full", className)}>
-      {!selectedFile ? (
+      {!(selectedFile || preview) ? (
         <div
           className={cn(
             "flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-xl transition-all duration-200 animate-fade-in",
@@ -165,9 +177,9 @@ export function UploadZone({
             )}
             
             <div className="flex flex-col">
-              <p className="font-medium truncate">{selectedFile.name}</p>
+              <p className="font-medium truncate">{selectedFile ? selectedFile.name : (preselectedImage ? "Sample Image" : "")}</p>
               <p className="text-sm text-muted-foreground">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                {selectedFile ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB` : "Sample for analysis"}
               </p>
             </div>
           </div>
