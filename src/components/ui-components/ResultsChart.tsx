@@ -29,7 +29,7 @@ export function ResultsChart({
       )}
     >
       <h3 className="text-md font-medium mb-3">{title}</h3>
-      <div className="w-full">
+      <div className="w-full h-[250px]">
         <canvas ref={canvasRef} id={id} width="400" height="250"></canvas>
       </div>
     </div>

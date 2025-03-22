@@ -11,8 +11,11 @@ export function useCharts() {
   useEffect(() => {
     // Function to initialize charts when DOM is fully loaded
     const initializeCharts = () => {
+      console.log('Initializing charts...');
+      
       // Add Chart.js from CDN if it's not already loaded
       if (!(window as any).Chart) {
+        console.log('Loading Chart.js from CDN...');
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
         script.async = true;
@@ -21,7 +24,7 @@ export function useCharts() {
           console.log('Chart.js loaded successfully');
           // Execute chart generation after a small delay to ensure DOM is ready
           setTimeout(() => {
-            console.log('Initializing charts...');
+            console.log('Generating charts...');
             generateCharts();
           }, 500);
         };
@@ -29,6 +32,7 @@ export function useCharts() {
         document.body.appendChild(script);
       } else {
         // Chart.js already loaded, directly generate charts
+        console.log('Chart.js already loaded, generating charts...');
         generateCharts();
       }
     };
@@ -86,9 +90,13 @@ export function useCharts() {
             chartInstance.destroy();
           }
           
-          // Create new chart
-          new (window as any).Chart(canvas.getContext('2d'), chart.config);
-          console.log(`Chart ${chart.id} created`);
+          try {
+            // Create new chart
+            new (window as any).Chart(canvas.getContext('2d'), chart.config);
+            console.log(`Chart ${chart.id} created successfully`);
+          } catch (error) {
+            console.error(`Error creating chart ${chart.id}:`, error);
+          }
         } else {
           console.warn(`Canvas with ID ${chart.id} not found`);
         }
@@ -123,6 +131,7 @@ export function useCharts() {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
@@ -172,6 +181,7 @@ export function useCharts() {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
@@ -251,6 +261,7 @@ export function useCharts() {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
@@ -326,6 +337,7 @@ export function useCharts() {
         options: {
           indexAxis: 'y',
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
@@ -395,6 +407,7 @@ export function useCharts() {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             title: {
               display: true,
@@ -563,28 +576,48 @@ export function useCharts() {
     // Run once after component is mounted
     initializeCharts();
 
-    // Add event listener for chart regeneration when results are shown
+    // Add a MutationObserver to detect when results become visible
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'data-results') {
           const resultsVisible = (mutation.target as HTMLElement).getAttribute('data-results') === 'true';
           if (resultsVisible) {
             console.log('Results now visible, initializing charts');
-            generateCharts();
+            // Wait a bit for the DOM to fully update before generating charts
+            setTimeout(() => {
+              generateCharts();
+            }, 100);
           }
         }
       });
     });
 
-    // Start observing the document
-    const resultsElements = document.querySelectorAll('[data-results]');
-    resultsElements.forEach(el => {
+    // Start observing the document body for any elements with data-results attribute
+    document.querySelectorAll('[data-results]').forEach(el => {
       observer.observe(el, { attributes: true });
     });
 
-    // Clean up observer on unmount
+    // Also set up a DOM change observer to catch when results are added to the DOM
+    const bodyObserver = new MutationObserver((mutations) => {
+      mutations.forEach(() => {
+        const resultsCard = document.querySelector('[data-results="true"]');
+        if (resultsCard) {
+          console.log('Results card detected in DOM, initializing charts');
+          generateCharts();
+
+          // Also observe this specific element for attribute changes
+          observer.observe(resultsCard, { attributes: true });
+        }
+      });
+    });
+
+    // Observe the body for DOM changes
+    bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Clean up observers on unmount
     return () => {
       observer.disconnect();
+      bodyObserver.disconnect();
     };
   }, []);
 }
