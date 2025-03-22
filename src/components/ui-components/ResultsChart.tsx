@@ -29,8 +29,14 @@ export function ResultsChart({
       )}
     >
       <h3 className="text-md font-medium mb-3">{title}</h3>
-      <div className="w-full h-[250px]">
-        <canvas ref={canvasRef} id={id} width="400" height="250"></canvas>
+      <div className="w-full h-[250px] relative">
+        <canvas 
+          ref={canvasRef} 
+          id={id} 
+          width="400" 
+          height="250"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        ></canvas>
       </div>
     </div>
   );

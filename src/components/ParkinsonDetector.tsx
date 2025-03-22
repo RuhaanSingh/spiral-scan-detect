@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { UploadZone } from "./ui-components/UploadZone";
 import { SampleImage } from "./ui-components/SampleImage";
@@ -61,13 +60,22 @@ export default function ParkinsonDetector() {
     setShowResults(false);
     setAnalysisProgress(0);
 
+    // Clear any existing progress interval
+    let progressInterval: number | undefined;
+    
     // Simulate analysis progress
-    const interval = setInterval(() => {
+    progressInterval = window.setInterval(() => {
       setAnalysisProgress(prev => {
-        const newProgress = prev + Math.random() * 15;
+        const newProgress = prev + Math.random() * 10;
         if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
+          // Clean up interval when we reach 100%
+          if (progressInterval) {
+            window.clearInterval(progressInterval);
+            progressInterval = undefined;
+          }
+          
+          // Finish the analysis after a short delay
+          window.setTimeout(() => {
             setIsAnalyzing(false);
             setShowResults(true);
             
@@ -81,7 +89,7 @@ export default function ParkinsonDetector() {
               setDiagnosisResult('positive');
               setConfidence(0.88 + Math.random() * 0.08);
             } else if (selectedFile) {
-              // For uploaded files, check filename format (similar to original JS)
+              // For uploaded files, check filename format
               const fileName = selectedFile.name.toLowerCase();
               const isValidFilename = (fileName.startsWith('d') || fileName.startsWith('s'));
               const isPngFile = fileName.endsWith('.png');
@@ -96,11 +104,19 @@ export default function ParkinsonDetector() {
               }
             }
           }, 500);
+          
           return 100;
         }
         return newProgress;
       });
-    }, 300);
+    }, 200);
+    
+    // Safety cleanup in case component unmounts during analysis
+    return () => {
+      if (progressInterval) {
+        window.clearInterval(progressInterval);
+      }
+    };
   };
 
   return (

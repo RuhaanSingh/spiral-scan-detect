@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 
 type ChartConfig = {
@@ -29,11 +28,17 @@ export function useCharts() {
           }, 500);
         };
         
+        script.onerror = (error) => {
+          console.error('Failed to load Chart.js:', error);
+        };
+        
         document.body.appendChild(script);
       } else {
         // Chart.js already loaded, directly generate charts
         console.log('Chart.js already loaded, generating charts...');
-        generateCharts();
+        setTimeout(() => {
+          generateCharts();
+        }, 100);
       }
     };
 
@@ -91,9 +96,16 @@ export function useCharts() {
           }
           
           try {
-            // Create new chart
-            new (window as any).Chart(canvas.getContext('2d'), chart.config);
-            console.log(`Chart ${chart.id} created successfully`);
+            // Wait a bit for canvas to be fully ready
+            setTimeout(() => {
+              try {
+                // Create new chart
+                new (window as any).Chart(canvas.getContext('2d'), chart.config);
+                console.log(`Chart ${chart.id} created successfully`);
+              } catch (error) {
+                console.error(`Error creating chart ${chart.id} after delay:`, error);
+              }
+            }, 100);
           } catch (error) {
             console.error(`Error creating chart ${chart.id}:`, error);
           }
@@ -103,7 +115,9 @@ export function useCharts() {
       });
 
       // Generate confusion matrix
-      generateConfusionMatrix();
+      setTimeout(() => {
+        generateConfusionMatrix();
+      }, 200);
     };
 
     // Helper functions to generate chart configurations
@@ -586,7 +600,7 @@ export function useCharts() {
             // Wait a bit for the DOM to fully update before generating charts
             setTimeout(() => {
               generateCharts();
-            }, 100);
+            }, 300);
           }
         }
       });
@@ -603,7 +617,10 @@ export function useCharts() {
         const resultsCard = document.querySelector('[data-results="true"]');
         if (resultsCard) {
           console.log('Results card detected in DOM, initializing charts');
-          generateCharts();
+          // Wait for the DOM to be fully ready
+          setTimeout(() => {
+            generateCharts();
+          }, 300);
 
           // Also observe this specific element for attribute changes
           observer.observe(resultsCard, { attributes: true });
