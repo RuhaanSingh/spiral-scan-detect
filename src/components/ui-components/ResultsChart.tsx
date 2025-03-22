@@ -24,9 +24,10 @@ export function ResultsChart({
   return (
     <div 
       className={cn(
-        "glass-card rounded-xl p-5 animate-fade-up",
+        "glass-card rounded-xl p-5 animate-fade-up opacity-100",
         className
       )}
+      style={{ animationDuration: '0.5s' }}
     >
       <h3 className="text-md font-medium mb-3">{title}</h3>
       <div className="w-full h-[250px] relative">
@@ -35,7 +36,15 @@ export function ResultsChart({
           id={id} 
           width="400" 
           height="250"
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            width: '100%', 
+            height: '100%',
+            opacity: 1,
+            transition: 'opacity 0.3s ease-in'
+          }}
         ></canvas>
       </div>
     </div>
